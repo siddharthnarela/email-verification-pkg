@@ -1,10 +1,14 @@
 {
   "name": "mailly",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "",
   "main": "dist/bundle.js",
   "scripts": {
     "build": "npx rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/siddharthnarela/email-verification-pkg.git"
   },
   "keywords": [],
   "author": "",
