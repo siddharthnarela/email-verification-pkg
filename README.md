@@ -1,20 +1,24 @@
 # Mailly 📧
 
-A lightweight, easy-to-use package for email OTP (One-Time Password) verification in JavaScript applications.
+A lightweight, efficient email OTP (One-Time Password) verification service for JavaScript applications.
 
 ![Version](https://img.shields.io/badge/version-6.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-ISC-green.svg)
 
-## Features ✨
+## Overview ✨
 
-- Simple email OTP generation and sending
-- OTP verification
-- Resend OTP functionality
-- Promise-based API
-- Framework agnostic - works with any JavaScript project
-- Lightweight with minimal dependencies
+Mailly provides a simple and reliable API for handling email-based OTP verification in your applications. It handles the core functionality of sending, verifying, and resending OTPs, allowing you to implement your own UI and business logic around it.
 
-## Installation 🚀
+## Core Features 🚀
+
+- 📤 Send OTP emails
+- ✅ Verify OTP codes
+- 🔄 Resend OTP functionality
+- ⚡ Promise-based API
+- 🛠 Framework agnostic
+- 🪶 Lightweight (~XX KB)
+
+## Installation
 
 ```bash
 npm install mailly
@@ -24,124 +28,100 @@ yarn add mailly
 pnpm add mailly
 ```
 
-## Usage Examples 💡
+## API Usage 💻
 
-### Basic JavaScript/Node.js
+### Send OTP
 
 ```javascript
-const { sendOtp, verifyOtp, resendOtp } = require('mailly');
+const { sendOtp } = require('mailly');
 
-// Send OTP
-async function handleSendOTP() {
-    try {
-        const result = await sendOtp('user@example.com');
-        console.log('OTP sent successfully:', result);
-    } catch (error) {
-        console.error('Failed to send OTP:', error);
-    }
+// Using async/await
+try {
+    const response = await sendOtp('user@example.com');
+    console.log('OTP sent successfully');
+} catch (error) {
+    console.error('Failed to send OTP:', error);
 }
 
-// Verify OTP
-async function handleVerifyOTP() {
-    try {
-        const result = await verifyOtp('user@example.com', '123456');
-        console.log('OTP verification result:', result);
-    } catch (error) {
-        console.error('Failed to verify OTP:', error);
-    }
-}
+// Using promises
+sendOtp('user@example.com')
+    .then(() => console.log('OTP sent successfully'))
+    .catch(error => console.error('Failed to send OTP:', error));
+```
 
-// Resend OTP
-async function handleResendOTP() {
-    try {
-        const result = await resendOtp('user@example.com');
-        console.log('OTP resent successfully:', result);
-    } catch (error) {
-        console.error('Failed to resend OTP:', error);
-    }
+### Verify OTP
+
+```javascript
+const { verifyOtp } = require('mailly');
+
+try {
+    const response = await verifyOtp('user@example.com', '123456');
+    console.log('OTP verified successfully');
+} catch (error) {
+    console.error('Verification failed:', error);
 }
 ```
 
-### React Example
+### Resend OTP
 
-```jsx
-import { useState } from 'react';
-import { sendOtp, verifyOtp, resendOtp } from 'mailly';
+```javascript
+const { resendOtp } = require('mailly');
 
-function OTPVerification() {
-    const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
-    const [status, setStatus] = useState('');
-
-    const handleSendOTP = async () => {
-        try {
-            setStatus('sending');
-            await sendOtp(email);
-            setStatus('sent');
-        } catch (error) {
-            setStatus('error');
-            console.error(error);
-        }
-    };
-
-    const handleVerifyOTP = async () => {
-        try {
-            setStatus('verifying');
-            const result = await verifyOtp(email, otp);
-            setStatus('verified');
-        } catch (error) {
-            setStatus('error');
-            console.error(error);
-        }
-    };
-
-    return (
-        <div>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter email"
-            />
-            <button onClick={handleSendOTP}>Send OTP</button>
-            
-            {status === 'sent' && (
-                <>
-                    <input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter OTP"
-                    />
-                    <button onClick={handleVerifyOTP}>Verify OTP</button>
-                    <button onClick={() => resendOtp(email)}>Resend OTP</button>
-                </>
-            )}
-        </div>
-    );
+try {
+    const response = await resendOtp('user@example.com');
+    console.log('OTP resent successfully');
+} catch (error) {
+    console.error('Failed to resend OTP:', error);
 }
 ```
 
-### Next.js API Route Example
+## Integration Examples 🔧
+
+### React Integration
 
 ```javascript
-// pages/api/verify-otp.js
-import { verifyOtp } from 'mailly';
+import { sendOtp, verifyOtp } from 'mailly';
 
-export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
+function LoginComponent() {
+    const handleVerification = async (email, otp) => {
+        try {
+            await verifyOtp(email, otp);
+            // Handle successful verification
+        } catch (error) {
+            // Handle verification error
+        }
+    };
+    
+    // Implement your UI and use the functions as needed
+}
+```
 
-    const { email, otp } = req.body;
+### Express.js API Integration
 
+```javascript
+const express = require('express');
+const { sendOtp, verifyOtp } = require('mailly');
+
+const app = express();
+app.use(express.json());
+
+app.post('/api/send-otp', async (req, res) => {
     try {
-        const result = await verifyOtp(email, otp);
-        res.status(200).json(result);
+        await sendOtp(req.body.email);
+        res.json({ success: true });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+});
+
+app.post('/api/verify-otp', async (req, res) => {
+    try {
+        await verifyOtp(req.body.email, req.body.otp);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 ```
 
 ## API Reference 📚
@@ -151,7 +131,7 @@ Sends an OTP to the specified email address.
 
 - **Parameters:**
   - `email` (string): The recipient's email address
-- **Returns:** Promise resolving to the server response
+- **Returns:** Promise<Object>
 - **Throws:** Error if the request fails
 
 ### verifyOtp(email, otp)
@@ -160,20 +140,18 @@ Verifies the OTP for the given email address.
 - **Parameters:**
   - `email` (string): The email address
   - `otp` (string): The OTP to verify
-- **Returns:** Promise resolving to the verification result
-- **Throws:** Error if the verification fails
+- **Returns:** Promise<Object>
+- **Throws:** Error if verification fails
 
 ### resendOtp(email)
 Resends the OTP to the specified email address.
 
 - **Parameters:**
   - `email` (string): The recipient's email address
-- **Returns:** Promise resolving to the server response
+- **Returns:** Promise<Object>
 - **Throws:** Error if the request fails
 
 ## Error Handling 🚨
-
-The package uses standard Promise-based error handling. All methods will throw an error if the request fails, which can be caught using try/catch blocks or .catch() method.
 
 ```javascript
 try {
@@ -194,10 +172,11 @@ try {
 
 ## Development 🛠️
 
-To build the package locally:
-
 ```bash
+# Install dependencies
 npm install
+
+# Build the package
 npm run build
 ```
 
@@ -208,3 +187,7 @@ ISC License
 ## Contributing 🤝
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support 💪
+
+If you encounter any issues or have questions, please file an issue on the GitHub repository.
